@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis PAI – Fikih, Sejarah & Aqidah</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #181c27;
+    --surface2: #1e2333;
+    --border: #2a304a;
+    --accent: #c9a84c;
+    --accent2: #e8c97a;
+    --green: #3ecf7a;
+    --red: #f04a5e;
+    --text: #e8e8f0;
+    --muted: #7a7f9a;
+    --radius: 14px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* BG decoration */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; position: relative; z-index: 1; }
+  .screen.active { display: block; }
+
+  /* ── START SCREEN ── */
+  #start-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  #start-screen.active { display: flex; }
+
+  .badge {
+    display: inline-block;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--accent2);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 50px;
+    margin-bottom: 24px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 1.2;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #e8e8f0 30%, var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 48px;
+  }
+
+  .stats-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 28px;
+    text-align: center;
+    min-width: 120px;
+  }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--accent2);
+    display: block;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .soal-picker {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    width: 100%;
+    max-width: 460px;
+    margin-bottom: 24px;
+  }
+  .soal-picker label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+  .slider-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 0 4px rgba(201,168,76,0.2);
+    transition: box-shadow .2s;
+  }
+  input[type=range]::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 0 8px rgba(201,168,76,0.15);
+  }
+  .slider-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    color: var(--accent2);
+    min-width: 48px;
+    text-align: right;
+  }
+
+  .quick-btns {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .quick-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .quick-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent2);
+    background: rgba(201,168,76,0.08);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #0f1117;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 16px 48px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    letter-spacing: .5px;
+    transition: all .25s;
+    box-shadow: 0 4px 24px rgba(201,168,76,0.25);
+  }
+  .btn-primary:hover {
+    background: var(--accent2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(201,168,76,0.35);
+  }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* ── QUIZ SCREEN ── */
+  #quiz-screen {
+    min-height: 100vh;
+    padding: 24px 16px 80px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  #quiz-screen.active { display: block; }
+
+  .quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .progress-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .soal-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--accent2);
+  }
+  .soal-total { color: var(--muted); font-size: 14px; }
+
+  .score-badge {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+    padding: 6px 16px;
+    font-size: 13px;
+    display: flex;
+    gap: 12px;
+  }
+  .score-badge span { color: var(--muted); }
+  .score-badge b { color: var(--green); }
+  .score-badge .wrong { color: var(--red); }
+
+  .progress-bar-wrap {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-bottom: 28px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width .4s ease;
+  }
+
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 32px 28px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .bank-tag {
+    display: inline-block;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.2);
+    color: var(--accent);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-bottom: 16px;
+  }
+  .question-text {
+    font-size: 15px;
+    line-height: 1.75;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .option-btn {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    cursor: pointer;
+    transition: all .2s;
+    text-align: left;
+    width: 100%;
+  }
+  .option-btn:hover:not(:disabled) {
+    border-color: rgba(201,168,76,0.5);
+    background: rgba(201,168,76,0.05);
+  }
+  .option-key {
+    min-width: 28px; height: 28px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    flex-shrink: 0;
+    transition: all .2s;
+  }
+  .option-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+    padding-top: 2px;
+  }
+
+  /* States */
+  .option-btn.selected {
+    border-color: var(--accent);
+    background: rgba(201,168,76,0.08);
+  }
+  .option-btn.selected .option-key {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0f1117;
+  }
+  .option-btn.correct {
+    border-color: var(--green) !important;
+    background: rgba(62,207,122,0.07) !important;
+  }
+  .option-btn.correct .option-key {
+    background: var(--green) !important;
+    border-color: var(--green) !important;
+    color: #0f1117 !important;
+  }
+  .option-btn.wrong {
+    border-color: var(--red) !important;
+    background: rgba(240,74,94,0.07) !important;
+  }
+  .option-btn.wrong .option-key {
+    background: var(--red) !important;
+    border-color: var(--red) !important;
+    color: #fff !important;
+  }
+  .option-btn:disabled { cursor: default; }
+
+  /* Feedback */
+  .feedback-card {
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+    display: none;
+    animation: fadeUp .3s ease;
+  }
+  .feedback-card.benar {
+    background: rgba(62,207,122,0.08);
+    border: 1px solid rgba(62,207,122,0.25);
+  }
+  .feedback-card.salah {
+    background: rgba(240,74,94,0.08);
+    border: 1px solid rgba(240,74,94,0.25);
+  }
+  .feedback-title {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .feedback-card.benar .feedback-title { color: var(--green); }
+  .feedback-card.salah .feedback-title { color: var(--red); }
+  .feedback-analysis {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #b0b4cc;
+  }
+
+  .btn-next {
+    background: var(--surface2);
+    border: 1.5px solid var(--accent);
+    color: var(--accent2);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 14px 32px;
+    border-radius: 50px;
+    cursor: pointer;
+    width: 100%;
+    transition: all .2s;
+    display: none;
+  }
+  .btn-next:hover {
+    background: rgba(201,168,76,0.1);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── RESULT SCREEN ── */
+  #result-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  #result-screen.active { display: flex; }
+
+  .result-grade {
+    font-family: 'Playfair Display', serif;
+    font-size: 6rem;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .grade-A { color: var(--green); }
+  .grade-B { color: #5bc4f0; }
+  .grade-C { color: var(--accent2); }
+  .grade-D { color: var(--red); }
+
+  .result-label {
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 32px;
+  }
+
+  .result-stats {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .r-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 28px;
+    min-width: 130px;
+  }
+  .r-stat-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .r-stat-val.green { color: var(--green); }
+  .r-stat-val.red   { color: var(--red); }
+  .r-stat-val.gold  { color: var(--accent2); }
+  .r-stat-label { font-size: 12px; color: var(--muted); }
+
+  .result-comment {
+    max-width: 420px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--muted);
+    margin-bottom: 40px;
+  }
+
+  .btn-restart {
+    background: transparent;
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 12px 32px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all .2s;
+    margin-top: 12px;
+  }
+  .btn-restart:hover {
+    border-color: var(--accent);
+    color: var(--accent2);
+  }
+
+  /* Review section */
+  .review-toggle {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 12px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all .2s;
+    margin-bottom: 0;
+  }
+  .review-toggle:hover { border-color: var(--accent); color: var(--accent2); }
+
+  .review-list {
+    width: 100%;
+    max-width: 680px;
+    margin-top: 32px;
+    display: none;
+    text-align: left;
+  }
+  .review-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 12px;
+    border-left: 3px solid var(--border);
+  }
+  .review-item.benar { border-left-color: var(--green); }
+  .review-item.salah { border-left-color: var(--red); }
+  .review-q { font-size: 13px; line-height: 1.65; margin-bottom: 10px; white-space: pre-wrap; }
+  .review-answers { font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 4px; }
+  .review-answers .r-correct { color: var(--green); }
+  .review-answers .r-wrong   { color: var(--red); }
+  .review-analysis { font-size: 12px; line-height: 1.65; color: #8a8fa8; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+
+  @media (max-width: 480px) {
+    .question-card { padding: 20px 16px; }
+    .option-btn { padding: 14px 14px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ════════════ START SCREEN ════════════ -->
+<div id="start-screen" class="screen active">
+  <div class="badge">PAI · Kelas 10–12 SMA/MA</div>
+  <h1>Kuis Fikih,<br>Sejarah & Aqidah</h1>
+  <p class="subtitle">Uji pemahamanmu tentang Sejarah Islam Nusantara, Pergaulan Bebas, dan Al-Kulliyatu Al-Khamsah (Maqashid Syariah). Setiap jawaban dilengkapi analisis mendalam.</p>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-num">40</span>
+      <span class="stat-label">Soal</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">3</span>
+      <span class="stat-label">Materi</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num">A–E</span>
+      <span class="stat-label">Pilihan</span>
+    </div>
+  </div>
+
+  <div class="soal-picker">
+    <label>Berapa soal yang ingin dikerjakan?</label>
+    <div class="slider-row">
+      <input type="range" id="jumlah-slider" min="5" max="40" step="5" value="10">
+      <span class="slider-val" id="slider-display">10</span>
+    </div>
+    <div class="quick-btns">
+      <button class="quick-btn" onclick="setJumlah(5)">5</button>
+      <button class="quick-btn" onclick="setJumlah(10)">10</button>
+      <button class="quick-btn" onclick="setJumlah(20)">20</button>
+      <button class="quick-btn" onclick="setJumlah(30)">30</button>
+      <button class="quick-btn" onclick="setJumlah(40)">Semua</button>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="startQuiz()">Mulai Kuis →</button>
+</div>
+
+<!-- ════════════ QUIZ SCREEN ════════════ -->
+<div id="quiz-screen" class="screen">
+  <div class="quiz-header">
+    <div class="progress-info">
+      <span class="soal-num" id="soal-num">1</span>
+      <span class="soal-total" id="soal-total">/ 10</span>
+    </div>
+    <div class="score-badge">
+      <span>✔ <b id="skor-benar">0</b></span>
+      <span>✘ <span class="wrong" id="skor-salah">0</span></span>
+    </div>
+  </div>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+
+  <div class="question-card">
+    <span class="bank-tag" id="bank-tag">No. 1</span>
+    <p class="question-text" id="question-text"></p>
+  </div>
+
+  <div class="options-list" id="options-list"></div>
+
+  <div class="feedback-card" id="feedback-card">
+    <div class="feedback-title" id="feedback-title"></div>
+    <div class="feedback-analysis" id="feedback-analysis"></div>
+  </div>
+
+  <button class="btn-next" id="btn-next" onclick="nextSoal()">Lanjut →</button>
+</div>
+
+<!-- ════════════ RESULT SCREEN ════════════ -->
+<div id="result-screen" class="screen">
+  <div class="result-grade" id="result-grade"></div>
+  <div class="result-label" id="result-label"></div>
+
+  <div class="result-stats">
+    <div class="r-stat">
+      <span class="r-stat-val green" id="res-benar">0</span>
+      <span class="r-stat-label">Benar</span>
+    </div>
+    <div class="r-stat">
+      <span class="r-stat-val red" id="res-salah">0</span>
+      <span class="r-stat-label">Salah</span>
+    </div>
+    <div class="r-stat">
+      <span class="r-stat-val gold" id="res-nilai">0</span>
+      <span class="r-stat-label">Nilai</span>
+    </div>
+  </div>
+
+  <p class="result-comment" id="result-comment"></p>
+
+  <button class="btn-primary" onclick="startQuiz()">Ulangi Kuis →</button>
+  <button class="btn-restart" onclick="goHome()">Kembali ke Awal</button>
+  <br><br>
+  <button class="review-toggle" onclick="toggleReview()">📋 Lihat Rekap Jawaban</button>
+  <div class="review-list" id="review-list"></div>
+</div>
+
+<script>
+const BANK = [
+  {
+    no:1,
+    q:"Sunan Kalijaga menggunakan kesenian wayang kulit sebagai sarana dakwah dengan mengubah isi cerita Ramayana dan Mahabharata menjadi memuat nilai-nilai Tauhid. Langkah metodologis ini dalam kacamata sosiologis dakwah menunjukkan bahwa...",
+    o:["A. Islam mengeliminasi total budaya lokal yang tidak murni","B. Sinkretisme keagamaan adalah tujuan akhir dari dakwah Wali Songo","C. Ulama mengadopsi pendekatan kultural-akomodatif tanpa mengorbankan substansi akidah","D. Masyarakat Jawa menolak Islam jika tidak disajikan dalam bentuk mistisisme","E. Budaya lokal lebih dominan dari nilai-nilai syariat Islam itu sendiri"],
+    j:"C",
+    a:"Strategi dakwah Sunan Kalijaga menggunakan media wayang mencerminkan metode akomodasi budaya (inkulturasi/kultural-akomodatif). Budaya lokal dirangkul dan disisipkan nilai tauhid tanpa merusak esensi akidah Islam itu sendiri."
+  },
+  {
+    no:2,
+    q:"Perhatikan potret dakwah berikut: Sunan Kudus melarang penyembelihan sapi saat Idul Adha di wilayah Kudus dan menggantinya dengan kerbau. Analisis yang paling tepat terhadap strategi fatwa tersebut adalah...",
+    o:["A. Memperlemah syariat Islam demi toleransi yang kebablasan","B. Sebuah strategi fikih dakwah yang mengutamakan kemaslahatan sosial dan psikologi masyarakat Hindu","C. Menunjukkan bahwa hukum menyembelih sapi adalah makruh dalam mazhab Syafii","D. Bentuk ketakutan ulama terhadap dominasi kerajaan Hindu yang berkuasa saat itu","E. Pengalihan fokus ibadah kurban dari aspek ritual ke aspek budaya"],
+    j:"B",
+    a:"Larangan ini didasari atas asas penghormatan terhadap masyarakat setempat yang mayoritas beragama Hindu (karena sapi disucikan dalam Hindu). Ini adalah bentuk implementasi fiqh ad-da'wah demi menjaga harmoni sosial serta menarik simpati masyarakat secara psikologis."
+  },
+  {
+    no:3,
+    q:"Manuskrip karya Syekh Nuruddin ar-Raniri dan Hamzah Fansuri di Aceh menunjukkan dinamika teologis yang menegangkan mengenai konsep Wujudiyah. Dampak positif dari perdebatan intelektual ini bagi perkembangan Islam di Nusantara adalah...",
+    o:["A. Terjadinya polarisasi yang meningkatkan kekuatan militer Kesultanan Aceh","B. Lahirnya tradisi literasi, kodifikasi hukum Islam, dan penguatan nalar kritis-teologis","C. Munculnya gerakan radikalisme yang menolak otoritas sultan","D. Berhentinya proses islamisasi di wilayah luar Sumatera","E. Masuknya pengaruh kolonialis Barat yang memanfaatkan perpecahan tersebut"],
+    j:"B",
+    a:"Perdebatan pemikiran/teologis (antara paham Wujudiyah Hamzah Fansuri dan penentangnya seperti Nuruddin ar-Raniri) memicu produktivitas penulisan kitab, yang berdampak sangat positif terhadap tumbuh suburnya tradisi literasi, dokumentasi hukum Islam, serta mengasah nalar kritis kaum intelektual di Nusantara."
+  },
+  {
+    no:4,
+    q:"Syekh Yusuf al-Makassari tidak hanya menjadi ulama menara gading yang mengajar di masjid, tetapi juga memimpin perlawanan bersenjata melawan VOC di Banten dan diasingkan ke Ceylon serta Afrika Selatan. Dari jejaknya, konsep 'Ulama' dalam sejarah Indonesia dapat dievaluasi sebagai...",
+    o:["A. Figur yang hanya fokus pada kesucian spiritual dan tarekat","B. Pemimpin spiritual yang wajib tunduk pada keputusan politik penguasa lokal","C. Simbol pemersatu kekuatan teologis, intelektual, dan gerakan geopolitik anti-penjajahan","D. Penasihat kerajaan yang tidak boleh ikut campur dalam urusan militer","E. Pelopor gerakan sekularisasi antara agama dan negara"],
+    j:"C",
+    a:"Peran Syekh Yusuf al-Makassari membuktikan bahwa figur ulama di Indonesia memiliki multiperan yang integratif: tidak hanya menguasai spiritual dan intelektual, melainkan juga memimpin pergerakan fisik/geopolitik melawan kolonialisme."
+  },
+  {
+    no:5,
+    q:"Pada abad ke-17, jaringan ulama Nusantara (seperti Abdurauf as-Singkili) yang belajar di Mekah dan Madinah kembali ke tanah air membawa sanad keilmuan yang kuat. Pengaruh utama jaringan ulama transnasional ini terhadap wajah Islam di Indonesia adalah...",
+    o:["A. Menjadikan Islam Nusantara sepenuhnya terpisah dari tradisi Arab","B. Terjadinya standardisasi syariat yang selaras dengan kearifan lokal (neo-sufisme)","C. Penghapusan seluruh sistem kerajaan Islam menjadi khilafah tunggal","D. Penolakan total terhadap ilmu pengetahuan dan modernitas Barat","E. Melemahnya ulama lokal digantikan oleh ulama Timur Tengah"],
+    j:"B",
+    a:"Kembalinya para ulama dari jaringan Haramain berhasil melakukan rekonsiliasi antara syariat dengan tasawuf (yang dikenal dengan gerakan neo-sufisme), sehingga melahirkan standardisasi syariat di Nusantara yang tetap adaptif dengan kearifan lokal."
+  },
+  {
+    no:6,
+    q:"Sunan Giri mendirikan pesantren di Giri Kedaton yang santrinya berasal dari berbagai penjuru nusantara seperti Maluku, Ternate, dan Tidore. Ketika para santri kembali ke daerah asal, mereka menjadi raja atau penasihat kerajaan. Pola penyebaran Islam ini menunjukkan bahwa...",
+    o:["A. Pesantren berfungsi sebagai lembaga kaderisasi elit politik dan keagamaan yang bersifat sentrifugal","B. Islamisasi di Indonesia Timur terjadi karena pemaksaan politik dari Giri Kedaton","C. Sunan Giri ingin menguasai jalur perdagangan rempah-rempah melalui jalur agama","D. Pendidikan pesantren saat itu hanya diperuntukkan bagi kaum bangsawan","E. Dakwah Islam tidak efektif jika tidak menggunakan jalur militer laut"],
+    j:"A",
+    a:"Bersifat sentrifugal artinya bergerak menyebar keluar dari pusat (Giri) ke daerah-daerah. Santri yang dididik di Giri dikader untuk menjadi pemimpin/ulama di daerah asal mereka masing-masing, yang kemudian memegang peranan penting di struktur elite politik lokal."
+  },
+  {
+    no:7,
+    q:"Perhatikan pernyataan berikut!\n(1) Menghapus sistem kasta yang mendiskriminasi masyarakat.\n(2) Menggunakan jalur perdagangan laut yang strategis.\n(3) Pendekatan tasawuf yang selaras dengan alam pikiran masyarakat lokal yang cenderung mistis.\n(4) Penggunaan kekuatan militer secara masif dari Kesultanan Demak.\n(5) Upacara keagamaan yang mewah dan memikat hati rakyat.\n\nFaktor internal dan metodologis yang menyebabkan Islam sangat mudah diterima oleh masyarakat Nusantara ditunjukkan oleh nomor...",
+    o:["A. 1), 2), dan 3)","B. 1), 3), dan 4)","C. 2), 4), dan 5)","D. 2), 3), dan 5)","E. 3), 4), dan 5)"],
+    j:"A",
+    a:"Faktor utama mudahnya penyebaran Islam di Nusantara adalah tiadanya sistem kasta (kesetaraan sosial), letak geografis/perdagangan strategis, serta metode dakwah tasawuf yang bersifat mistis-akomodatif yang sangat cocok dengan kultur lokal saat itu."
+  },
+  {
+    no:8,
+    q:"Perayaan Sekaten yang digagas oleh Wali Songo menggunakan daya tarik gamelan Kiai Guntur Madu untuk mengumpulkan massa, kemudian di sela-sela pertunjukan disisipkan khotbah dan pembacaan syahadatain. Evaluasi efektivitas strategi ini membuktikan bahwa...",
+    o:["A. Media hiburan sekuler lebih efektif daripada teks kitab suci","B. Masyarakat nusantara hanya bisa didekati dengan hal-hal yang bersifat mistis dan supranatural","C. Proses komunikasi dakwah yang sukses membutuhkan jembatan kultural yang menyentuh afeksi massa","D. Wali Songo melakukan kompromi teologis demi kuantitas pengikut","E. Strategi tersebut memicu terjadinya konflik dengan para pemuka agama Hindu-Buddha"],
+    j:"C",
+    a:"Penyelenggaraan Sekaten adalah bentuk 'jembatan kultural' yang kreatif. Musik gamelan menyentuh emosi/afeksi masyarakat secara kultural, yang kemudian memudahkan diterimanya pesan utama dakwah (syahadat)."
+  },
+  {
+    no:9,
+    q:"Syekh Nawawi al-Bantani menjadi Imam Masjidil Haram dan menulis puluhan kitab berbahasa Arab yang dibaca di seluruh dunia, namun pemikirannya tetap responsif terhadap penderitaan rakyat Indonesia di bawah penjajahan Belanda. Karakteristik intelektual yang ditunjukkan oleh Syekh Nawawi al-Bantani adalah...",
+    o:["A. Intelektual kosmopolitan yang melupakan akar nasionalismenya","B. Ulama yang mengisolasi diri dari realitas politik global","C. Representasi integrasi antara keagungan ilmu universal (global) dengan kepedulian sosial-nasional (lokal)","D. Ulama yang menganggap perjuangan fisik melawan penjajah adalah hal yang sia-sia","E. Pemikir tradisi yang menolak segala bentuk pembaruan pemikiran Islam"],
+    j:"C",
+    a:"Syekh Nawawi di satu sisi diakui secara global (kosmopolitan/skala internasional di Mekah), namun di sisi lain tidak melupakan tanah airnya dan tetap responsif (peduli sosiopolitik lokal) terhadap penjajahan di Nusantara."
+  },
+  {
+    no:10,
+    q:"Kerajaan Samudera Pasai menjadi pelopor kesultanan Islam di Nusantara. Mengingat posisi geografisnya di Selat Malaka, hubungan antara kekuatan politik-ekonomi kesultanan dengan percepatan penyebaran Islam ke pedalaman adalah...",
+    o:["A. Kesultanan memaksa pedagang memeluk Islam melalui blokade ekonomi","B. Stabilitas politik dan keamanan pelabuhan memicu intensifikasi interaksi mubalig asing dengan penduduk lokal","C. Sultan menggelar perang suci untuk menguasai daerah pedalaman Sumatra","D. Pasai mengisolasi diri dari pengaruh luar agar kemurnian Islam terjaga","E. Hubungan perdagangan runtuh karena perbedaan agama antara pesisir dan pedalaman"],
+    j:"B",
+    a:"Keamanan pelabuhan dan stabilitas politik Kerajaan Samudera Pasai sebagai bandar perdagangan internasional menciptakan ruang aman dan interaksi yang intensif bagi para ulama/mubalig dunia dengan penduduk lokal maupun pedalaman."
+  },
+  {
+    no:11,
+    q:"Sunan Ampel merumuskan dakwah falsafah yang sangat terkenal, yaitu 'Moh Limo' (Moh Main, Moh Ngombe, Moh Maling, Moh Madat, Moh Madon). Dari sudut pandang sosiologis, fokus utama dakwah Sunan Ampel saat itu adalah...",
+    o:["A. Memperbaiki sistem teologi teoritis yang terlalu rumit bagi masyarakat awam","B. Melakukan rekonstruksi sosial dan moral akibat degradasi moral di akhir masa Majapahit","C. Membangun kekuatan militer yang tangguh untuk meruntuhkan kerajaan Hindu","D. Memfokuskan dakwah pada sektor ekonomi dan perdagangan monopoli","E. Menyusun undang-undang formal yang kaku untuk diterapkan di wilayah Surabaya"],
+    j:"B",
+    a:"'Moh Limo' adalah prinsip perbaikan akhlak. Secara sosiologis, ini adalah gerakan rekonstruksi moral masyarakat bawah akibat merosotnya tatanan sosial-moral di era akhir keruntuhan Kerajaan Majapahit."
+  },
+  {
+    no:12,
+    q:"Dalam kitab Tuhfat al-Mursalah, konsep tasawuf diajarkan dengan penekanan tazkiyatun nafs yang diimbangi kepatuhan syariat. Mengapa sintesis tasawuf–syariat menjadi kunci keberhasilan dakwah ulama di Indonesia?",
+    o:["A. Karena syariat Islam terlalu berat jika tidak dibumbui hal mistis","B. Masyarakat Nusantara punya spiritualitas kuat, dan sintesis ini menjaga mereka dalam koridor hukum Islam","C. Sintesis ini membolehkan ritual penyembahan berhala bersamaan dengan salat","D. Ulama ingin menghindari konflik dengan ahli fikih murni dari Timur Tengah","E. Sintesis tersebut menjadikan Islam agama eksklusif bagi kalangan istana"],
+    j:"B",
+    a:"Karakteristik masyarakat Nusantara menyukai hal-hal yang berdimensi batin/spiritual. Penggabungan tasawuf dengan syariat membuat ajaran Islam mudah diterima tanpa membuat umat tergelincir ke dalam penyimpangan hukum agama (menjaga koridor syariat)."
+  },
+  {
+    no:13,
+    q:"Sultan Agung dari Mataram Islam mengubah kalender Jawa (Saka) berbasis matahari menjadi kalender Jawa Islam berbasis bulan, dipadukan dengan penanggalan Hijriah. Ini merupakan contoh dari...",
+    o:["A. Asimilasi budaya sepihak yang merugikan tradisi Islam","B. Politisasi agama untuk memperluas wilayah kekuasaan militer","C. Rekayasa budaya struktural demi mengintegrasikan identitas keagamaan dan kebudayaan masyarakat","D. Penolakan terhadap sains astronomi modern demi mempertahankan tradisi kuno","E. Deklarasi pemisahan urusan duniawi (kerajaan) dari urusan ukhrawi (agama)"],
+    j:"C",
+    a:"Langkah Sultan Agung merupakan bentuk intervensi/rekayasa kebudayaan dari tingkat atas (struktural penguasa) agar kebudayaan Jawa tradisional dan identitas Islam menyatu secara harmonis dan formal."
+  },
+  {
+    no:14,
+    q:"Syekh Burhanuddin Ulakan mengislamkan Minangkabau melalui tradisi surau. Transformasi yang terjadi pada lembaga surau setelah masuknya Islam adalah...",
+    o:["A. Surau diubah menjadi pusat pendidikan Islam dan tarekat tanpa menghilangkan fungsi sosialnya","B. Surau menggantikan peran masjid jami secara total dalam pelaksanaan salat Jumat","C. Penghapusan sistem matrilineal Minangkabau secara paksa melalui lembaga surau","D. Surau dijadikan markas untuk melawan pemuka adat","E. Fungsi surau dipersempit hanya untuk tempat peristirahat para musafir Arab"],
+    j:"A",
+    a:"Surau adalah institusi lokal yang sudah ada sebelum Islam (sebagai tempat pemuda tidur/berkumpul). Masuknya Islam mentransformasikan fungsi surau secara substansial menjadi pusat pembelajaran agama/tarekat, namun mempertahankan fungsi sosial aslinya."
+  },
+  {
+    no:15,
+    q:"Raja Tallo, Sultan Abdullah Awwalul Islam, menyerukan Islam sebagai agama kerajaan, namun tidak langsung menghapus hukum adat Ade' yang mengakar. Kesimpulan dari pola kepemimpinan dakwah ini adalah...",
+    o:["A. Islamisasi struktural di Sulawesi gagal total karena dominasi hukum adat","B. Terjadi dualisme hukum yang saling menghancurkan antara syariat dan adat","C. Strategi dakwah berwawasan kearifan: Islam menjadi ruh yang mewarnai adat selama tidak syirik","D. Raja takut kehilangan legitimasi politiknya jika memaksakan syariat secara murni","E. Ulama lokal tidak memiliki pemahaman yang utuh mengenai hukum Islam global"],
+    j:"C",
+    a:"Kebijakan tidak serta merta menghapus hukum adat (Ade') melambangkan strategi dakwah yang akomodatif berbasis kearifan lokal. Adat tetap berjalan namun diberikan nilai-nilai Islam sebagai koridornya."
+  },
+  {
+    no:16,
+    q:"Di era digital, akses pornografi menjadi masif melalui gawai. Berdasarkan QS. Al-Isra' ayat 32 ('janganlah kamu mendekati zina...'), perilaku 'mendekati' dalam konteks modern yang paling akurat adalah...",
+    o:["A. Hanya ketika seseorang melakukan kontak fisik langsung dengan lawan jenis","B. Menonton konten pornografi, sexting, dan membiarkan pikiran berfantasi liar","C. Menikah di usia muda tanpa persiapan yang matang secara finansial","D. Berteman dengan lawan jenis di media diskusi kelompok untuk belajar","E. Menolak mengikuti tren fesyen modern yang sedang viral di platform digital"],
+    j:"B",
+    a:"Dalam konteks teknologi modern, aktivitas yang dikategorikan sebagai 'mendekati zina' (wasilah menuju zina) meliputi stimulasi visual/teks digital seperti menonton pornografi atau melakukan sexting."
+  },
+  {
+    no:17,
+    q:"Data survei mencatat korelasi positif antara angka putus sekolah remaja dengan maraknya kehamilan di luar nikah. Langkah preventif-sistemik paling sesuai prinsip Islam untuk memutus rantai masalah ini adalah...",
+    o:["A. Memberikan sanksi sosial berupa pengucilan dari desa bagi pelaku","B. Menyediakan fasilitas kontrasepsi gratis bagi remaja yang aktif secara seksual","C. Kolaborasi pendidikan keimanan di keluarga, regulasi konten internet, dan akses pendidikan inklusif","D. Memaksa seluruh remaja untuk melakukan pernikahan massal","E. Menutup seluruh sekolah ko-edukasi dan memisahkan wilayah berdasarkan gender"],
+    j:"C",
+    a:"Pendekatan yang bersifat 'preventif-sistemik' dalam Islam harus menyentuh akar masalah secara holistik: membentengi akhlak lewat keluarga, menutup akses pornografi (sistemik digital), serta memberikan jaminan hak edukasi (sekolah)."
+  },
+  {
+    no:18,
+    q:"Pergaulan bebas sering dikemas atas nama 'kebebasan berekspresi' dan HAM. Dari sudut pandang worldview Islam, kebebasan manusia yang hakiki adalah...",
+    o:["A. Kebebasan mutlak tanpa batas selama tidak merugikan hak materi orang lain","B. Kebebasan yang terbimbing oleh wahyu dan syariat demi menjaga martabat kemanusiaan (karamah insaniyyah)","C. Hak untuk menyampaikan seluruh materi biologi kapan dan di mana saja","D. Ketundukan total pada tren global yang diterima oleh mayoritas umat manusia","E. Pembatasan total seluruh aktivitas sosial di luar rumah bagi kaum perempuan"],
+    j:"B",
+    a:"Konsep kebebasan (Hurriyah) dalam Islam bukanlah kebebasan tanpa batas liberal, melainkan kebebasan yang bertanggung jawab yang dipandu oleh aturan syariat (wahyu) demi maslahat manusia itu sendiri."
+  },
+  {
+    no:19,
+    q:"Dampak psikologis paling destruktif dan sering tersembunyi dari pelaku pergaulan bebas yang kronis menurut pengamatan psiko-spiritual Islam adalah...",
+    o:["A. Lebih cepat mengingat ilmu pengetahuan karena tingginya hormon dopamine","B. Matinya kepekaan hati (qalbun mayyit), hilangnya rasa malu (haya'), dan kecemasan eksistensial yang akut","C. Meningkatnya rasa percaya diri secara drastis dalam interaksi sosial","D. Terbebasnya jiwa dari aturan-aturan sosial tradisi kuno","E. Menguatnya ikatan batin yang tulus dengan pasangan tidak sahnya"],
+    j:"B",
+    a:"Dari segi psiko-spiritual Islam (tazkiyatun nafs), kemaksiatan besar yang dilakukan berulang-ulang akan menutup hati dengan noda hitam (ran), mematikan nurani (qalbun mayyit), serta melenyapkan sifat malu (haya')."
+  },
+  {
+    no:20,
+    q:"Dalam QS. An-Nur ayat 30–31, Allah memerintahkan baik laki-laki maupun perempuan untuk ghadul bashar (menahan pandangan). Mengapa perintah ini diletakkan sebagai hulu pencegahan zina?",
+    o:["A. Karena mata adalah organ tubuh yang paling mudah mengalami kerusakan fisik","B. Pandangan yang tidak terjaga adalah anak panah beracun iblis yang menstimulasi syahwat dan menggerakkan tubuh untuk berzina","C. Menahan pandangan adalah ritual khusus yang hanya berlaku di dalam masjid","D. Allah ingin membatasi manusia agar tidak menikmati keindahan ciptaan-Nya","E. Menahan pandangan secara otomatis membebaskan seseorang dari segala penyakit medis"],
+    j:"B",
+    a:"Menurut hadis dan konsep psikologi Islam, mata adalah pintu gerbang menuju hati dan pikiran. Pandangan yang liar (sahamun masmum) akan melahirkan lintasan pikiran negatif, memicu syahwat, dan puncaknya menggerakkan tubuh melakukan zina."
+  },
+  {
+    no:21,
+    q:"Seseorang yang terjebak pergaulan bebas sering diawali dari ketidakmampuan berkata 'tidak' karena takut dianggap tidak keren (peer pressure). Evaluasi keimanan terhadap kondisi ini menunjukkan...",
+    o:["A. Tingginya solidaritas sosial yang patut diapresiasi dalam konsep ukhuwah","B. Krisis identitas dan lemahnya izzah (harga diri Muslim) akibat lebih takut penilaian manusia daripada Allah","C. Strategi adaptasi lingkungan yang cerdas di era modernitas","D. Bentuk implementasi sikap tawadu dan toleransi antar teman sejawat","E. Gejala normal yang akan hilang sendirinya tanpa perlu intervensi agama"],
+    j:"B",
+    a:"Ketidakmampuan memegang prinsip kebenaran karena takut dikucilkan teman menunjukkan kurangnya rasa izzah (kebanggaan/kehormatan diri atas iman) dan adanya pergeseran prioritas ketakutan dari Allah ke makhluk."
+  },
+  {
+    no:22,
+    q:"'Perempuan dan laki-laki yang berzina, maka deralah masing-masing seratus kali...' (QS. An-Nur: 2). Hukuman hudud yang sangat berat ini dalam hukum sosiologis Islam bertujuan untuk...",
+    o:["A. Melampiaskan kemarahan masyarakat terhadap pelaku kemaksiatan","B. Menghancurkan masa depan fisik dan mental pelaku agar jera total","C. Memberikan efek jera preventif-massal serta menjaga kesucian nasab masyarakat","D. Menunjukkan bahwa Islam adalah agama yang kejam dan tidak mengenal ampunan","E. Mengurangi jumlah populasi yang melakukan pelanggaran norma"],
+    j:"C",
+    a:"Sifat dasar hukuman hudud dalam sosiologi hukum Islam berfungsi sebagai zajir (pencegah/efek jera bagi publik agar tidak ada yang berani meniru) serta jawabir (penebus dosa), sekaligus melindungi keturunan/nasab (hifzhun nasl)."
+  },
+  {
+    no:23,
+    q:"Maraknya pembuangan bayi dari hubungan di luar nikah membuktikan efek domino dosa besar. Jika dirunut secara kausalitas, dosa zina memicu kehancuran moral berikutnya berupa...",
+    o:["A. Menurunnya daya beli masyarakat akibat pengeluaran pokok bayi","B. Hilangnya rasa kemanusiaan paling dasar (kasih sayang orang tua) dan munculnya keberanian melakukan pembunuhan (al-qatl)","C. Meningkatnya jumlah panti asuhan yang dikelola oleh negara","D. Terjadinya perubahan iklim global akibat energi negatif manusia","E. Bergesernya sistem waris dari patrilineal menjadi matrilineal"],
+    j:"B",
+    a:"Zina merusak fitrah kemanusiaan. Ketika hasil zina (kehamilan) dianggap sebagai aib yang mengancam ego pelaku, rasa kasih sayang alami sirna dan memicu hilangnya akal sehat hingga tega melakukan dosa besar berikutnya, yaitu pembunuhan jiwa (al-qatl)."
+  },
+  {
+    no:24,
+    q:"Seorang remaja Muslim sering melihat teman-temannya membagikan gaya hidup berpacaran bebas di media sosial dan mulai terombang-ambing. Langkah taktis berbasis Tazkiyatun Nafs yang harus dilakukan segera adalah...",
+    o:["A. Membalas dengan membuat konten pamer ibadah agar terlihat lebih unggul","B. Digital detox, menyibukkan diri di sirkel positif (majelis ilmu), dan memperbanyak zikir","C. Melaporkan akun teman-temannya ke polisi atas pelanggaran UU ITE","D. Mengikuti gaya hidup tersebut secara sembunyi-sembunyi agar tidak ketahuan orang tua","E. Menghakimi teman secara kasar di kolom komentar"],
+    j:"B",
+    a:"Metode pembersihan jiwa (tazkiyatun nafs) menuntut seseorang menjauhi sumber penyakit hati (takhalli). Dalam hal ini, langkah taktisnya adalah menjauhi paparan visual negatif lewat digital detox dan mengisinya dengan amal saleh/lingkungan baik (tahalli)."
+  },
+  {
+    no:25,
+    q:"Zina memicu penularan Penyakit Menular Seksual (PMS) seperti HIV/AIDS. Fakta medis ini jika dikontekstualisasikan dengan syariat Islam membuktikan bahwa...",
+    o:["A. Syariat Islam dibuat semata-mata untuk membatasi kenikmatan biologi manusia","B. Larangan Allah selalu berbanding lurus dengan perlindungan kesehatan fisik manusia (hifzhun nafs)","C. HIV/AIDS hanya menyerang orang yang tidak memiliki pengetahuan medis","D. Ilmu medis modern bertabrakan dengan ajaran spiritual klasik Islam","E. Hukum syariat tidak berlaku lagi jika medis sudah menemukan obat penawar HIV/AIDS"],
+    j:"B",
+    a:"Segala larangan hukum Islam (maqashid syariah) bermuara pada perlindungan kemaslahatan manusia. Pelarangan zina terbukti secara empiris-medis melindungi unsur jiwa dan raga manusia dari kerusakan fatal (hifzhun nafs/nasl)."
+  },
+  {
+    no:26,
+    q:"Perhatikan pernyataan berikut!\n(1) Memilih lingkungan pertemanan yang fokus pada prestasi dan kesalehan.\n(2) Mengisi waktu luang dengan kegiatan positif (olahraga, seni Islam, organisasi).\n(3) Membaca buku pendidikan seksualitas berbasis Islam.\n(4) Menjaga komunikasi terbuka dan jujur dengan orang tua.\n(5) Menghindari khalwat dengan lawan jenis tanpa mahram.\n\nRangkaian yang paling komprehensif membentengi pelajar dari pergaulan bebas adalah...",
+    o:["A. 1), 2), dan 3)","B. 1), 3), dan 4)","C. 1), 2), 4), dan 5)","D. 2), 3), 4), dan 5)","E. Semua jawaban benar"],
+    j:"E",
+    a:"Kelima opsi tersebut mencakup aspek preventif personal (pertemanan, aktivitas, edukasi seks Islami, komunikasi keluarga, dan menjaga jarak syar'i), sehingga semuanya merupakan paket tindakan yang komprehensif."
+  },
+  {
+    no:27,
+    q:"Islam melarang pacaran yang melibatkan khalwat dan ikhtilat. Mengapa ta'aruf ditawarkan sebagai substitusi yang sah dan terhormat?",
+    o:["A. Karena ta'aruf adalah pacaran yang dibungkus istilah Arab agar terlihat islami","B. Ta'aruf fokus pada pengenalan visi, misi, dan karakter secara rasional-objektif dengan mediator/keluarga demi menjaga kehormatan","C. Ta'aruf membolehkan calon pasangan tinggal bersama sebelum akad","D. Pihak laki-laki bebas menentukan mahar semurah mungkin tanpa persetujuan perempuan","E. Ta'aruf membuat kedua pihak langsung menikah tanpa perlu mengenal karakter"],
+    j:"B",
+    a:"Perbedaan mendasar pacaran dengan ta'aruf adalah objektivitas dan penjagaan. Ta'aruf mengedepankan penilaian rasional mengenai kesiapan hidup bersama dengan didampingi pihak ketiga (mediator/keluarga) guna menghindari pelanggaran syariat."
+  },
+  {
+    no:28,
+    q:"Proyek pabrik besar berpotensi mencemari sumber air bersih warga, namun akan membuka lapangan kerja bagi ratusan warga miskin. Berdasarkan Al-Kulliyatu Al-Khamsah, pertimbangan prioritas hukum yang paling tepat adalah...",
+    o:["A. Memprioritaskan pabrik demi Hifzhu al-Mal (menjaga harta) karena ekonomi adalah segalanya","B. Mengabaikan kedua aspek dan menyerahkan keputusan kepada pemilik modal","C. Mengizinkan pabrik beroperasi dengan syarat membiayai tempat ibadah warga","D. Memindahkan seluruh warga agar pabrik berkembang tanpa gangguan","E. Menutup proyek jika ada ancaman terhadap Hifzhu an-Nafs (jiwa/kesehatan), karena jiwa lebih tinggi dari harta"],
+    j:"E",
+    a:"Dalam hierarki Al-Kulliyatu Al-Khamsah, menjaga keselamatan jiwa (Hifzhu an-Nafs) kedudukannya jauh lebih tinggi dan harus didahulukan daripada menjaga harta benda atau nilai ekonomi (Hifzhu al-Mal)."
+  },
+  {
+    no:29,
+    q:"Seseorang menyebarkan hoaks dan kebencian di media sosial hingga memicu konflik horizontal antar-suku. Tindakan ini merusak pilar Al-Kulliyatu Al-Khamsah, yaitu...",
+    o:["A. Hifzhu ad-Din, karena agama melarang mencela orang lain","B. Hifzhu al-Aql, karena hoaks merusak nalar sehat dan meracuni pikiran masyarakat","C. Hifzhu al-Nasl, karena pelaku hoaks biasanya belum menikah","D. Hifzhu al-Mal, karena postingan hoaks membutuhkan kuota internet yang mahal","E. Hifzhu an-Nafs, karena pelaku hoaks dihukum penjara oleh negara"],
+    j:"B",
+    a:"Berita bohong (hoaks) secara langsung menyerang fungsi akal sehat publik. Hifzhu al-Aql menuntut umat Islam untuk menjaga kesucian pemikiran, akurasi informasi (tabayun), dan melarang konsumsi maupun penyebaran info yang manipulatif."
+  },
+  {
+    no:30,
+    q:"Mayoritas ulama ushul fikih menempatkan Hifzhu ad-Din pada urutan pertama Al-Kulliyatu Al-Khamsah. Analisis teologis yang paling akurat untuk mendasari penempatan tersebut adalah...",
+    o:["A. Agama adalah ruh, kompas moral, dan orientasi tertinggi yang menjiwai keselamatan seluruh aspek kehidupan dunia dan akhirat","B. Islam tidak menganggap penting urusan fisik, intelektual, dan harta benda di dunia","C. Penempatan ini agar umat fokus pada ritual ibadah dan menjauhi ilmu sains modern","D. Agar umat Islam punya alasan memaksakan keyakinan kepada pemeluk agama lain","E. Penempatan tersebut hanyalah formalitas klasik tanpa pengaruh pada hukum praktis"],
+    j:"A",
+    a:"Urutan pertama ditempati oleh Hifzhu ad-Din karena dalam pandangan hidup Islam (Islamic worldview), agama berfungsi sebagai fondasi transendental, ruh, serta pemandu moral bagi seluruh aktivitas perlindungan pilar kehidupan lainnya."
+  },
+  {
+    no:31,
+    q:"Saat pandemi, pemerintah menutup sementara tempat ibadah dan mengganti salat berjamaah dengan salat di rumah. Evaluasi fatwa ini berdasarkan Maqashid Asy-Syari'ah adalah...",
+    o:["A. Sesat karena meremehkan Hifzhu ad-Din demi urusan duniawi","B. Menunjukkan lemahnya iman para ulama yang takut mati","C. Sangat tepat: dalam kondisi darurat, Hifzhu an-Nafs didahulukan dari ibadah komunal","D. Pemerintah sengaja menjauhkan umat dari agama atas dalih kesehatan","E. Hifzhu al-Mal lebih diutamakan daripada Hifzhu an-Nafs dalam kasus ini"],
+    j:"C",
+    a:"Berdasarkan kaidah fikih darurat, ketika terjadi ancaman wabah yang mematikan, mengutamakan keselamatan jiwa (Hifzhu an-Nafs) menjadi prioritas utama. Mekanisme ibadah ritual dapat disesuaikan (dikerjakan di rumah) demi mencegah kemudaratan massal."
+  },
+  {
+    no:32,
+    q:"Seseorang kecanduan judi online, menghabiskan tabungan keluarga, mengajukan pinjol ilegal, hingga mencuri demi modal berjudi. Kasus ini menunjukkan rusaknya pilar Al-Kulliyatu Al-Khamsah secara simultan, yaitu...",
+    o:["A. Hifzhu ad-Din dan Hifzhu al-Nasl","B. Hifzhu al-Aql (hilang nalar sehat) dan Hifzhu al-Mal (kehancuran harta)","C. Hifzhu an-Nafs dan Hifzhu al-Nasl","D. Hanya merusak Hifzhu al-Mal saja","E. Hifzhu ad-Din dan Hifzhu an-Nafs"],
+    j:"B",
+    a:"Perilaku kecanduan judi merusak akal pikiran sehat seseorang (Hifzhu al-Aql) sehingga ia tidak logis dalam bertindak, yang kemudian berdampak langsung secara beruntun pada kehancuran dan hilangnya harta benda pribadi maupun milik orang lain (Hifzhu al-Mal)."
+  },
+  {
+    no:33,
+    q:"Mengapa dalam Al-Kulliyatu Al-Khamsah aspek Hifzhu ad-Din secara umum ditempatkan paling pertama oleh mayoritas ulama ushul fikih?",
+    o:["A. Urusan duniawi sama sekali tidak memiliki nilai penting dalam Islam","B. Agama adalah ruh, kompas eksistensial, dan orientasi tertinggi yang mencakup keselamatan dunia–akhirat","C. Agar umat tidak memikirkan kesehatan fisik, pendidikan akal, dan kekayaan materi","D. Menjaga agama berarti mengizinkan pemaksaan keyakinan kepada pemeluk agama lain","E. Penempatan tersebut hanya formalitas teologis tanpa batasan praktis hukum"],
+    j:"B",
+    a:"(Esensi mirip Soal No. 30) Penempatan Hifzhu ad-Din di puncak hierarki menegaskan fungsi utama agama sebagai fondasi, ruh kehidupan, dan petunjuk esensial demi tercapainya kebahagiaan serta keselamatan hakiki manusia."
+  },
+  {
+    no:34,
+    q:"Plagiarisme (menjiplak karya ilmiah) demi gelar akademik atau keuntungan finansial melanggar dua prinsip Al-Kulliyatu Al-Khamsah sekaligus, yaitu...",
+    o:["A. Hifzhu ad-Din dan Hifzhu an-Nafs","B. Hifzhu al-Aql dan Hifzhu al-Mal","C. Hifzhu al-Nasl dan Hifzhu al-Mal","D. Hifzhu an-Nafs dan Hifzhu ad-Din","E. Tidak melanggar aspek mana pun karena ilmu pengetahuan bersifat milik umum"],
+    j:"B",
+    a:"Plagiarisme merupakan pelanggaran berat terhadap integritas berpikir/intelektual (Hifzhu al-Aql) dan sekaligus pencurian terhadap hak kekayaan intelektual atau keuntungan finansial milik orang lain secara tidak sah (Hifzhu al-Mal)."
+  },
+  {
+    no:35,
+    q:"Pernikahan beda agama legal di beberapa negara, namun syariat Islam melarangnya dengan ketat. Dari Maqashid Syari'ah, pelarangan ini terutama memperkuat pilar...",
+    o:["A. Hifzhu al-Mal","B. Hifzhu al-Aql","C. Hifzhu al-Nasl dan Hifzhu ad-Din","D. Hifzhu an-Nafs","E. Hifzhu al-Wathan"],
+    j:"C",
+    a:"Larangan pernikahan beda agama dalam Islam ditujukan secara prinsipil untuk menjaga keberlanjutan kemurnian keyakinan beragama (Hifzhu ad-Din) serta demi melindungi identitas, pendidikan spiritual, serta masa depan keturunan yang dilahirkan (Hifzhu al-Nasl)."
+  },
+  {
+    no:36,
+    q:"Seorang dokter dihadapkan pada kondisi darurat: ibu hamil mengalami komplikasi berat yang mengancam nyawanya. Pilihan hanya dua: selamatkan ibu dengan menggugurkan kandungan, atau biarkan keduanya meninggal. Berdasarkan Maqashid Syari'ah, tindakan dokter yang benar adalah...",
+    o:["A. Membiarkan keduanya meninggal demi kepasrahan total pada takdir Allah","B. Menyelamatkan janin dan mengorbankan nyawa ibu karena janin punya masa depan lebih panjang","C. Mengundi koin untuk menentukan siapa yang diselamatkan","D. Menolak bertindak karena takut dituntut secara hukum pidana","E. Menyelamatkan nyawa ibu (Hifzhu an-Nafs yang pasti hidupnya) dengan menggugurkan janin (yang hidupnya spekulatif)"],
+    j:"E",
+    a:"Dalam kaidah ushul fikih, jika terdapat dua mudarat yang berbenturan, dipilih mudarat yang paling ringan (Al-Ahamm fa Al-Ahamm). Kehidupan sang ibu bersifat pasti (yaqin/muhaqqaq), sedangkan janin dalam kondisi darurat tersebut bersifat spekulatif (mazhnun)."
+  },
+  {
+    no:37,
+    q:"Bullying fisik dan verbal di sekolah menyebabkan korban depresi berat. Tindakan pelaku secara nyata merusak aspek...",
+    o:["A. Hifzhu al-Mal saja karena korban kehilangan uang jajan","B. Hifzhu an-Nafs (keselamatan fisik–mental jiwa) dan Hifzhu al-Aql (kesehatan mental psikologis)","C. Hifzhu ad-Din secara eksklusif karena pelaku tidak mencerminkan akhlak Islami","D. Hifzhu al-Nasl karena merusak masa depan pernikahan pelaku","E. Tidak merusak pilar mana pun karena hanya kenakalan remaja biasa"],
+    j:"B",
+    a:"Tindakan perundungan berdampak destruktif langsung pada kesehatan raga serta kondisi kejiwaan korban (Hifzhu an-Nafs), sekaligus memicu depresi atau kerusakan mental psikologis yang menyerang kestabilan nalar/akal sehat korban (Hifzhu al-Aql)."
+  },
+  {
+    no:38,
+    q:"Ekonomi syariah melarang maysir (judi), gharar (penipuan), dan riba (bunga). Tujuan pelarangan ini dalam kerangka Hifzhu al-Mal secara kritis adalah...",
+    o:["A. Menghambat laju pertumbuhan modal pengusaha muslim di pasar global","B. Menjadikan umat Islam miskin agar fokus pada ibadah ritual di masjid","C. Memaksa masyarakat kembali pada sistem barter kuno yang tidak praktis","D. Memastikan perpindahan harta terjadi secara berkeadilan, transparan, produktif, dan bebas dari eksploitasi","E. Menghilangkan hak individu untuk memiliki aset pribadi secara mandiri"],
+    j:"D",
+    a:"Konsep Hifzhu al-Mal dalam ekonomi Islam tidak sekadar melindungi kepemilikan harta secara pasif, tetapi bertujuan mengatur agar sirkulasi kekayaan di masyarakat berjalan secara adil, produktif, transparan, serta menghindari eksploitasi (zhalim)."
+  },
+  {
+    no:39,
+    q:"Negara mengalokasikan anggaran besar untuk pendidikan nasional, membangun perpustakaan, mendanai penelitian, dan memberi beasiswa. Kebijakan ini merupakan penegakan Al-Kulliyatu Al-Khamsah pada tingkat struktural, khususnya dalam...",
+    o:["A. Hifzhu ad-Din agar semua pelajar menjadi hafiz Al-Qur'an","B. Hifzhu al-Aql: mencerdaskan bangsa, membebaskan dari kebodohan, mengembangkan potensi kognitif","C. Hifzhu al-Nasl agar angka kelahiran bayi meningkat tajam","D. Hifzhu al-Mal agar negara bisa menarik pajak lebih tinggi dari kaum terpelajar","E. Hifzhu an-Nafs agar para pelajar memiliki ketahanan fisik yang kuat"],
+    j:"B",
+    a:"Segala bentuk kebijakan, fasilitas, dan program yang memprioritaskan peningkatan kualitas intelektual, ilmu pengetahuan, dan pencerdasan masyarakat adalah wujud pengamalan dari pilar pelindungan akal (Hifzhu al-Aql)."
+  },
+  {
+    no:40,
+    q:"Seseorang menolak divaksin saat epidemi dengan alasan pasrah pada takdir (fatalisme/jabariyah). Akibatnya ia menularkan penyakit ke keluarganya hingga ada yang meninggal. Evaluasi berdasarkan Al-Kulliyatu Al-Khamsah adalah...",
+    o:["A. Imannya tinggi dan murni karena berserah total tanpa usaha insani","B. Ia benar karena hidup–mati adalah hak mutlak Allah yang tidak bisa diintervensi manusia","C. Ia gagal memahami bahwa ikhtiar medis menjaga jiwa (Hifzhu an-Nafs) adalah bagian dari takdir Allah dan kewajiban syariat","D. Tindakannya bisa dimengerti selama ia tetap menjalankan salat lima waktu","E. Negara bersalah karena tidak memaksanya dengan sanksi pidana sejak awal"],
+    j:"C",
+    a:"Islam menolak paham fatalisme (Jabariyah) yang pasrah tanpa usaha dalam menghadapi marabahaya. Melakukan ikhtiar medis atau tindakan preventif demi menjaga keselamatan nyawa sendiri dan orang lain (Hifzhu an-Nafs) adalah perintah agama yang inheren (menyatu) dengan konsep tawakal yang benar."
+  }
+];
+
+// ─── State ───
+let sesi = [], idx = 0, benar = 0, salah = 0, riwayat = [];
+let jumlah = 10;
+
+// ─── Slider ───
+const slider = document.getElementById('jumlah-slider');
+const display = document.getElementById('slider-display');
+slider.addEventListener('input', () => {
+  jumlah = +slider.value;
+  display.textContent = jumlah;
+});
+function setJumlah(n) {
+  jumlah = n; slider.value = n; display.textContent = n;
+}
+
+// ─── Shuffle helper ───
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length-1; i > 0; i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startQuiz() {
+  sesi = shuffle(BANK).slice(0, jumlah);
+  idx = 0; benar = 0; salah = 0; riwayat = [];
+  showScreen('quiz-screen');
+  renderSoal();
+}
+
+function renderSoal() {
+  const s = sesi[idx];
+  document.getElementById('soal-num').textContent = idx+1;
+  document.getElementById('soal-total').textContent = '/ '+sesi.length;
+  document.getElementById('skor-benar').textContent = benar;
+  document.getElementById('skor-salah').textContent = salah;
+  document.getElementById('progress-fill').style.width = (idx/sesi.length*100)+'%';
+  document.getElementById('bank-tag').textContent = 'Soal No. '+s.no;
+  document.getElementById('question-text').textContent = s.q;
+
+  const list = document.getElementById('options-list');
+  list.innerHTML = '';
+  s.o.forEach(opt => {
+    const key = opt[0];
+    const text = opt.substring(3);
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-key">${key}</span><span class="option-text">${text}</span>`;
+    btn.onclick = () => pilih(key, btn, s);
+    list.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback-card');
+  fb.style.display = 'none';
+  fb.className = 'feedback-card';
+  document.getElementById('btn-next').style.display = 'none';
+}
+
+function pilih(key, clickedBtn, s) {
+  // disable all
+  document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
+
+  const isBenar = key === s.j;
+  if (isBenar) benar++; else salah++;
+
+  // mark buttons
+  document.querySelectorAll('.option-btn').forEach(b => {
+    const k = b.querySelector('.option-key').textContent;
+    if (k === s.j) b.classList.add('correct');
+    if (k === key && !isBenar) b.classList.add('wrong');
+    if (k === key) b.classList.add('selected');
+  });
+
+  // feedback
+  const fb = document.getElementById('feedback-card');
+  const title = document.getElementById('feedback-title');
+  const analysis = document.getElementById('feedback-analysis');
+  fb.style.display = 'block';
+  fb.className = 'feedback-card ' + (isBenar ? 'benar' : 'salah');
+  title.innerHTML = isBenar
+    ? '✔ Jawaban Benar!'
+    : `✘ Salah — Jawaban benar: <strong>${s.j}</strong>`;
+  analysis.textContent = s.a;
+
+  document.getElementById('skor-benar').textContent = benar;
+  document.getElementById('skor-salah').textContent = salah;
+
+  riwayat.push({ soal: s, pilihan: key, benar: isBenar });
+
+  const btnNext = document.getElementById('btn-next');
+  btnNext.style.display = 'block';
+  btnNext.textContent = idx+1 < sesi.length ? 'Lanjut →' : 'Lihat Hasil →';
+}
+
+function nextSoal() {
+  idx++;
+  if (idx < sesi.length) renderSoal();
+  else showResult();
+}
+
+function showResult() {
+  const nilai = Math.round(benar/sesi.length*100);
+  let grade, label, comment;
+  if (nilai >= 85) { grade = 'A'; label = 'Sangat Baik'; comment = 'Luar biasa! Penguasaan materimu sangat kuat. Terus pertahankan dan dalami lebih lanjut.'; }
+  else if (nilai >= 70) { grade = 'B'; label = 'Baik'; comment = 'Bagus! Kamu memahami sebagian besar materi. Ulangi soal yang salah untuk hasil lebih sempurna.'; }
+  else if (nilai >= 55) { grade = 'C'; label = 'Cukup'; comment = 'Kamu sudah di jalur yang benar, tapi masih perlu lebih banyak latihan dan review materi.'; }
+  else { grade = 'D'; label = 'Perlu Belajar Lebih'; comment = 'Jangan menyerah! Baca kembali materi dan coba lagi. Setiap usaha adalah bagian dari perjalanan belajar.'; }
+
+  document.getElementById('result-grade').textContent = grade;
+  document.getElementById('result-grade').className = 'result-grade grade-'+grade;
+  document.getElementById('result-label').textContent = label;
+  document.getElementById('res-benar').textContent = benar;
+  document.getElementById('res-salah').textContent = salah;
+  document.getElementById('res-nilai').textContent = nilai;
+  document.getElementById('result-comment').textContent = comment;
+
+  // Build review
+  const rl = document.getElementById('review-list');
+  rl.innerHTML = '';
+  riwayat.forEach((r,i) => {
+    const div = document.createElement('div');
+    div.className = 'review-item '+(r.benar?'benar':'salah');
+    const jawUser = r.soal.o.find(o=>o[0]===r.pilihan) || r.pilihan;
+    const jawBenar = r.soal.o.find(o=>o[0]===r.soal.j) || r.soal.j;
+    div.innerHTML = `
+      <div class="review-q"><strong>Soal ${i+1}</strong> (Bank No.${r.soal.no}) — ${r.soal.q}</div>
+      <div class="review-answers">
+        <span class="${r.benar?'r-correct':'r-wrong'}">Jawabanmu: ${jawUser}</span>
+        ${!r.benar ? `<span class="r-correct">Benar: ${jawBenar}</span>` : ''}
+      </div>
+      <div class="review-analysis">💡 ${r.soal.a}</div>
+    `;
+    rl.appendChild(div);
+  });
+  rl.style.display = 'none';
+
+  showScreen('result-screen');
+}
+
+function toggleReview() {
+  const rl = document.getElementById('review-list');
+  rl.style.display = rl.style.display === 'none' ? 'block' : 'none';
+}
+
+function goHome() { showScreen('start-screen'); }
+</script>
+</body>
+</html>
